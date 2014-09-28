@@ -71,7 +71,7 @@
     _titleFont = [UIFont systemFontOfSize:13.0f];
     _titleTextColor = [UIColor blackColor];
     _selectedTitleFont = [UIFont boldSystemFontOfSize:13.0f];
-    _selectedTitleTextColor = [UIColor blackColor];
+    _selectedTitleTextColor = self.tintColor;
     _stylesTitleForSelectedSegment = YES;
     _segmentHeight = 30.0f;
     _segmentIndicatorClass = [NYSegmentIndicator class];
@@ -295,6 +295,13 @@
             }
         }
     }];
+}
+
+#pragma mark - Tint Color
+
+- (void)tintColorDidChange {
+    self.selectedTitleTextColor = self.tintColor;
+    [super tintColorDidChange];
 }
 
 #pragma mark - Helpers
