@@ -101,7 +101,15 @@
  */
 @property (nonatomic) CGFloat segmentIndicatorInset UI_APPEARANCE_SELECTOR;
 
+/**
+ The height of the segmented control and its segment indicators
+ */
 @property (nonatomic) CGFloat segmentHeight UI_APPEARANCE_SELECTOR;
+
+/**
+ Inset padding around the segment (not segment indicator). Good if you want the segment render larger than the indicator.
+ */
+@property (nonatomic) UIEdgeInsets segmentInsets UI_APPEARANCE_SELECTOR;
 
 /**
  If YES, the selected segment indicator will be drawn with a background gradient specified by the selectedSegmentIndicatorGradientTopColor and selectedSegmentIndicatorGradientBottomColor properties.  If set to NO, the indicator will be filled with the color specified by the selectedSegmentIndicatorBackgroundColor property. The default value is YES.

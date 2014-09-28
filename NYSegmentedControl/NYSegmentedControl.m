@@ -73,8 +73,10 @@
     _selectedTitleFont = [UIFont boldSystemFontOfSize:13.0f];
     _selectedTitleTextColor = [UIColor blackColor];
     _stylesTitleForSelectedSegment = YES;
+    _segmentHeight = 30.0f;
     _segmentIndicatorClass = [NYSegmentIndicator class];
     _segmentIndicatorInset = 0.0f;
+    _segmentInsets = UIEdgeInsetsZero;
     _segmentIndicatorAnimationDuration = 0.15f;
     _gradientTopColor = [UIColor colorWithRed:0.21f green:0.21f blue:0.21f alpha:1.0f];
     _gradientBottomColor = [UIColor colorWithRed:0.16f green:0.16f blue:0.16f alpha:1.0f];
@@ -93,16 +95,12 @@
 }
 
 - (CGSize)sizeThatFits:(CGSize)size {
-    CGFloat maxSegmentWidth = 0.0f;
-    
+    CGFloat totalWidth = 0.0f;
     for (NYSegment *segment in self.segments) {
-        CGFloat segmentWidth = [segment sizeThatFits:size].width;
-        if (segmentWidth > maxSegmentWidth) {
-            maxSegmentWidth = segmentWidth;
-        }
+        CGFloat segmentWidth = [segment sizeThatFits:size].width + (self.segmentInsets.left + self.segmentInsets.right);
+        totalWidth += segmentWidth;
     }
-    
-    return CGSizeMake(maxSegmentWidth * [self.segments count], 30.0f);
+    return CGSizeMake(totalWidth, self.segmentHeight);
 }
 
 - (CGSize)intrinsicContentSize {
@@ -112,12 +110,15 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    CGFloat segmentWidth = CGRectGetWidth(self.frame) / [self.segments count];
+    CGFloat segmentXOffset = 0.0;
     CGFloat segmentHeight = CGRectGetHeight(self.frame);
     for (int i = 0; i < [self.segments count]; i++) {
         NYSegment *segment = self.segments[i];
-        segment.frame = CGRectMake(segmentWidth * i, 0.0f, segmentWidth, segmentHeight);
-        
+        CGSize segmentSize = [segment sizeThatFits:self.frame.size];
+        CGFloat segmentWidth = segmentSize.width + (self.segmentInsets.left + self.segmentInsets.right);
+        segment.frame = CGRectMake(segmentXOffset, 0.0f, segmentWidth, segmentHeight);
+        segmentXOffset += segmentWidth;
+
         if (self.stylesTitleForSelectedSegment && self.selectedSegmentIndex == i) {
             segment.titleLabel.font = self.selectedTitleFont;
             segment.titleLabel.textColor = self.selectedTitleTextColor;
@@ -299,9 +300,12 @@
 #pragma mark - Helpers
 
 - (CGRect)indicatorFrameForSegment:(NYSegment *)segment {
-    return CGRectMake(CGRectGetMinX(segment.frame) + self.segmentIndicatorInset,
+    CGSize segmentSize = [segment sizeThatFits:segment.frame.size];
+    // Fit segmented indicator to width of segment
+    CGFloat xOffset = (segment.frame.size.width - segmentSize.width) * 0.5 + CGRectGetMinX(segment.frame);
+    return CGRectMake(xOffset + self.segmentIndicatorInset,
                       CGRectGetMinY(segment.frame) + self.segmentIndicatorInset,
-                      CGRectGetWidth(segment.frame) - (2.0f * self.segmentIndicatorInset),
+                      segmentSize.width - (2.0f * self.segmentIndicatorInset),
                       CGRectGetHeight(segment.frame) - (2.0f * self.segmentIndicatorInset));
 }
 
@@ -372,6 +376,11 @@
     [self setNeedsLayout];
 }
 
+- (void)setSegmentInsets:(UIEdgeInsets)segmentInsets {
+    _segmentInsets = segmentInsets;
+    [self setNeedsLayout];
+}
+
 - (void)setSegmentIndicatorGradientTopColor:(UIColor *)segmentIndicatorGradientTopColor {
     self.selectedSegmentIndicator.gradientTopColor = segmentIndicatorGradientTopColor;
 }
@@ -421,6 +430,11 @@
 
 - (void)setSelectedTitleTextColor:(UIColor *)selectedTitleTextColor {
     _selectedTitleTextColor = selectedTitleTextColor;
+    [self setNeedsLayout];
+}
+
+- (void)setSegmentHeight:(CGFloat)segmentHeight {
+    _segmentHeight = segmentHeight;
     [self setNeedsLayout];
 }
 
