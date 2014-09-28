@@ -8,8 +8,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NYSegmentedControl.h"
 
-@interface NYSegmentIndicator : UIView
+@interface NYSegmentIndicator : UIView <NYSegmentIndicatorProtocol>
 
 @property (nonatomic) CGFloat cornerRadius;
 

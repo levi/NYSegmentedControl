@@ -9,6 +9,19 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol NYSegmentIndicatorProtocol <NSObject>
+
+@property (nonatomic) CGFloat cornerRadius;
+
+@property (nonatomic) CGFloat borderWidth;
+@property (nonatomic) UIColor *borderColor;
+
+@property (nonatomic) BOOL drawsGradientBackground;
+@property (nonatomic) UIColor *gradientTopColor;
+@property (nonatomic) UIColor *gradientBottomColor;
+
+@end
+
 @interface NYSegmentedControl : UIControl
 
 /**
@@ -74,6 +87,11 @@
 @property (nonatomic) UIColor *gradientBottomColor UI_APPEARANCE_SELECTOR;
 
 /**
+ The class to use for the segment indicator view. Defaults to NYSegmentIndicator
+ */
+@property (nonatomic) Class segmentIndicatorClass;
+
+/**
  The duration of the segment change animation.
  */
 @property (nonatomic) CGFloat segmentIndicatorAnimationDuration UI_APPEARANCE_SELECTOR;
@@ -82,6 +100,8 @@
  The amount the selected segment indicator should be inset from the outer edge of the control.
  */
 @property (nonatomic) CGFloat segmentIndicatorInset UI_APPEARANCE_SELECTOR;
+
+@property (nonatomic) CGFloat segmentHeight UI_APPEARANCE_SELECTOR;
 
 /**
  If YES, the selected segment indicator will be drawn with a background gradient specified by the selectedSegmentIndicatorGradientTopColor and selectedSegmentIndicatorGradientBottomColor properties.  If set to NO, the indicator will be filled with the color specified by the selectedSegmentIndicatorBackgroundColor property. The default value is YES.

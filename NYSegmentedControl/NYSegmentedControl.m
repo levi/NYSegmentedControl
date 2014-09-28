@@ -14,7 +14,7 @@
 @interface NYSegmentedControl ()
 
 @property NSArray *segments;
-@property NYSegmentIndicator *selectedSegmentIndicator;
+@property UIView<NYSegmentIndicatorProtocol> *selectedSegmentIndicator;
 
 - (void)moveSelectedSegmentIndicatorToSegmentAtIndex:(NSUInteger)index animated:(BOOL)animated;
 - (CGRect)indicatorFrameForSegment:(NYSegment *)segment;
@@ -73,6 +73,7 @@
     _selectedTitleFont = [UIFont boldSystemFontOfSize:13.0f];
     _selectedTitleTextColor = [UIColor blackColor];
     _stylesTitleForSelectedSegment = YES;
+    _segmentIndicatorClass = [NYSegmentIndicator class];
     _segmentIndicatorInset = 0.0f;
     _segmentIndicatorAnimationDuration = 0.15f;
     _gradientTopColor = [UIColor colorWithRed:0.21f green:0.21f blue:0.21f alpha:1.0f];
@@ -88,9 +89,7 @@
     self.opaque = NO;
     self.segments = [NSArray array];
     
-    self.selectedSegmentIndicator = [[NYSegmentIndicator alloc] initWithFrame:CGRectZero];
-    self.drawsSegmentIndicatorGradientBackground = YES;
-    [self addSubview:self.selectedSegmentIndicator];
+    [self insertSelectedSegmentIndicator];
 }
 
 - (CGSize)sizeThatFits:(CGSize)size {
@@ -141,6 +140,19 @@
     }
 }
 
+- (void)insertSelectedSegmentIndicator {
+    if (self.selectedSegmentIndicator) {
+        [self.selectedSegmentIndicator removeFromSuperview];
+        self.selectedSegmentIndicator = nil;
+    }
+    
+    self.selectedSegmentIndicator = [[self.segmentIndicatorClass alloc] initWithFrame:CGRectZero];
+    self.drawsSegmentIndicatorGradientBackground = YES;
+    [self addSubview:self.selectedSegmentIndicator];
+    
+    [self setNeedsLayout];
+}
+
 - (void)insertSegmentWithTitle:(NSString *)title atIndex:(NSUInteger)index {
     if (index >= [self.segments count]) {
         index = [self.segments count];
@@ -172,10 +184,6 @@
 }
 
 - (void)removeAllSegments {
-    for (NYSegment *segment in self.segments) {
-        [segment removeFromSuperview];
-    }
-    
     self.segments = [NSArray array];
     [self setNeedsLayout];
 }
@@ -414,6 +422,12 @@
 - (void)setSelectedTitleTextColor:(UIColor *)selectedTitleTextColor {
     _selectedTitleTextColor = selectedTitleTextColor;
     [self setNeedsLayout];
+}
+
+- (void)setSegmentIndicatorClass:(Class)segmentIndicatorClass
+{
+    _segmentIndicatorClass = segmentIndicatorClass;
+    [self insertSelectedSegmentIndicator];
 }
 
 - (void)setSelectedSegmentIndex:(NSUInteger)selectedSegmentIndex {
